@@ -1,0 +1,21 @@
+
+GIT_STASH="\$(git stash list 2> /dev/null | wc -l | sed -n -e 's/\(^[^0]*$\)/[\1]/p')"
+GIT_BRANCH="\$(git branch --no-color 2> /dev/null | sed -n -e 's/* \(.*\)/ (\1)/p')"
+SVN_BRANCH="\$(parse_svn_branch)"
+
+parse_svn_branch(){
+      parse_svn_url | sed -e 's#^'"$(parse_svn_repository_root)"'##g' | awk '{print " (svn::"$1")" }'
+}
+
+parse_svn_url(){
+        svn info 2>/dev/null | sed -ne 's#^URL: ##p'
+}
+parse_svn_repository_root() {
+          svn info 2>/dev/null | sed -ne 's#^Basis des Projektarchivs: ##p'
+}
+
+
+# PS1="\[\033[35m\]\t\[\033[m\]-\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
+PS1="${GREEN}\u${GREEN}@\h: ${RED}\w \$ ${NORMAL}"
+#alias use-git='PS1="\[\033[1;31m\]\t\[\033[0;33m\]-\[\033[0;33m\]\u${YELLOW}@\h:${YELLOW}\w${YELLOW}${GIT_BRANCH}${BRED}${GIT_STASH} ${RED}\$ ${NORMAL}"'
+alias use-git='PS1="\[\033[35m\]\t\[\033[m\]-\[\033[36m\]\u${GREEN}@\h:${RED}\w${BBLUE}${GIT_BRANCH}${BRED}${GIT_STASH}${BBLUE}${SVN_BRANCH}${RED}\$ ${NORMAL}"
